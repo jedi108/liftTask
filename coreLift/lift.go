@@ -30,7 +30,7 @@ type RealLift struct {
 	HomeEntry     *HomeParams // привязка к дому
 	LiftParams                // параметры лифта(можно увеличивать не меняя код клиентский
 	CurrentFloor  int         // текущий этаж
-	toFloor       int         // следующий этаж
+	toFloor       int         // Целевой этаж в данном направлении лифта
 	liftDirection func()      // действие над лифтом
 }
 
