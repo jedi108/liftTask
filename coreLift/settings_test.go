@@ -2,6 +2,9 @@ package coreLift
 
 import "testing"
 
+/*
+	Контроллер управление лифта с помощью консоли
+ */
 func TestSetHomeOptionsValid(t *testing.T) {
 	var args []string
 	args = append(args, "exe")
