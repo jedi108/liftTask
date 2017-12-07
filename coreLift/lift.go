@@ -55,19 +55,27 @@ func NewLift(home *HomeParams, opts ...func(*LiftParams)) *RealLift {
 	return lift
 }
 
+/*
+	Параметры лифта: скорость лифта при движении в метрах в секунду
+ */
 func SetLiftSpeedMetrSec(secInMetr float64) func(*LiftParams) {
 	return func(lift *LiftParams) {
 		lift.SpeedTimeMetrSec = secInMetr
 	}
 }
 
+/*
+	Параметры лифта: время между открытием и закрытием дверей.
+ */
 func SetLiftTimeOpenCloseDoors(secondsOC float64) func(*LiftParams) {
 	return func(lift *LiftParams) {
 		lift.OpenCloseTimeSec = secondsOC
 	}
 }
 
-
+/*
+	Возможность паралельно по пути собирать попутчиков заданного нового этажа
+ */
 func (rl *RealLift) addOnTheWay(Userfloor int) {
 	rl.LiftDoing.RLock()
 	defer rl.LiftDoing.RUnlock()
@@ -79,7 +87,9 @@ func (rl *RealLift) addOnTheWay(Userfloor int) {
 	}
 }
 
-
+/*
+	Обрашение к пулу лифта пока он действует
+ */
 func (rl *RealLift) isBusyDoing(Userfloor int) {
 	switch {
 	case rl.toFloor > rl.CurrentFloor: // Путь вверх
@@ -95,6 +105,9 @@ func (rl *RealLift) isBusyDoing(Userfloor int) {
 	}
 }
 
+/*
+	Отправка задания лифту
+ */
 func (rl *RealLift) DriveLiftToFloor(Userfloor int) {
 	rl.LiftDoing.RLock()
 	defer rl.LiftDoing.RUnlock()
@@ -115,6 +128,9 @@ func (rl *RealLift) DriveLiftToFloor(Userfloor int) {
 	}()
 }
 
+/*
+	Определяем и задаем направление лифту относительно текущего этажа
+ */
 func (rl *RealLift) GetDirectionFunc() func() {
 	switch {
 	case rl.CurrentFloor > rl.toFloor:
@@ -129,6 +145,9 @@ func (rl *RealLift) GetDirectionFunc() func() {
 	return func() {}
 }
 
+/*
+	Исполняем лифтом заданное действие
+ */
 func (rl *RealLift) doLiftDirection() {
 	for {
 		if rl.CurrentFloor == rl.toFloor {
@@ -147,6 +166,9 @@ func (rl *RealLift) doLiftDirection() {
 	}
 }
 
+/*
+	Проверяем есть ли по пути пассажиры на выход или вызвавшие по пути лифт, если есть останавливаемся на требуемых этажах
+ */
 func (rl *RealLift) сheckAndGetPeoplesInWay() {
 	if _, ok := rl.byInTheWay[rl.CurrentFloor]; ok {
 		fmt.Printf("Так как по пути был вызываемый этаж %d, возможно берем попутчиков\n", rl.CurrentFloor)
@@ -159,6 +181,9 @@ func (rl *RealLift) сheckAndGetPeoplesInWay() {
 	}
 }
 
+/*
+	Действующая команда лифта со сроком выполнения
+ */
 func (rl *RealLift) liftRunCommand(command func(), intTimeMilliseconds float64) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(intTimeMilliseconds)*time.Second)
 	defer func() {
